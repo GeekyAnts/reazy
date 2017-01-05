@@ -30,7 +30,7 @@ var Reazy = function () {
   _createClass(Reazy, [{
     key: 'set',
     value: function set(name, value) {
-      this[name] = value;
+      _lodash2.default.set(this, name, value);
     }
   }, {
     key: 'get',
@@ -38,11 +38,16 @@ var Reazy = function () {
       return _lodash2.default.get(this, name, _lodash2.default.get(this, ['services', name], null));
     }
   }, {
+    key: 'getAllServices',
+    value: function getAllServices() {
+      return this.services;
+    }
+  }, {
     key: 'use',
     value: function use(service, serviceName) {
-      console.log('service', service);
+      // console.log('service', service);
       if (serviceName) {
-        _lodash2.default.set(this, ['services', serviceName], service.call(this));
+        _lodash2.default.set(this, ['services', serviceName], service.call(this, serviceName));
       } else {
         service.call(this);
       }

@@ -1,6 +1,6 @@
 {
   "name": "reazy",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "A simple services-based framework for React and React Native",
   "main": "dist/index.js",
   "scripts": {
@@ -27,8 +27,6 @@
     "chokidar": "^1.6.1"
   },
   "dependencies": {
-    "feathers-commons": "^0.8.7",
-    "lodash": "^4.17.2",
-    "uberproto": "^1.2.0"
+    "lodash": "^4.17.2"
   }
 }
