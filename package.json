@@ -10,17 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "gitlab@gitlab.sahusoft.com:products/reasy.git"
+    "url": "https://github.com/GeekyAnts/reazy.git"
   },
   "keywords": [
-    "reasy",
+    "reazy",
     "react",
     "react",
     "native",
     "framework"
   ],
   "author": "Kumar Sanket, Himanshu Satija, Sankhadeep Roy",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
