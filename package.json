@@ -4,9 +4,10 @@
   "description": "A simple services-based framework for React and React Native",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src --presets babel-preset-es2015 --out-dir dist",
-    "start": "babel src --presets babel-preset-es2015 --watch --out-dir dist"
+    "copy-templates": "cp -r src/reazy-generator/generators/app/templates dist/reazy-generator/generators/app/templates",
+    "babel-compile": "babel src --presets babel-preset-es2015 --out-dir dist --copy-files --ignore /templates/",
+    "build": "rm -rf dist && npm run babel-compile && npm run copy-templates",
+    "watch": "babel src --presets babel-preset-es2015 --watch --out-dir dist -s --copy-files --ignore /templates/  && npm run copy-templates"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,20 @@
     "chokidar": "^1.6.1"
   },
   "dependencies": {
-    "lodash": "^4.17.2"
+    "lodash": "^4.17.2",
+    "vorpal": "^1.10.9",
+    "yeoman-environment": "^1.5.2",
+    "yo": "=1.7.1",
+    "ast-traverse": "^0.1.1",
+    "chalk": "^1.1.1",
+    "cross-spawn-async": "^2.1.9",
+    "i": "^0.3.3",
+    "object.assign": "^4.0.3",
+    "recast": "^0.11.2",
+    "repeating": "^2.0.0",
+    "string": "^3.3.1",
+    "string-length": "^1.0.1",
+    "update-notifier": "^1.0.1",
+    "yeoman-generator": "^0.24.1"
   }
 }

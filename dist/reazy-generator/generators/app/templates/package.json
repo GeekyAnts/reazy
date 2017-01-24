@@ -1,0 +1,17 @@
+{
+  "name": "<%= name %>",
+  "description": "<%= description %>",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "repository": {},
+  "keywords": [],
+  "author": {},
+  "license": "MIT",
+  "jest": {
+    "preset": "react-native"
+  }
+}

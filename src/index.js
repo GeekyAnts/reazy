@@ -1,6 +1,7 @@
 import makeDebug from 'debug';
 import _ from 'lodash';
 
+
 const debug = makeDebug('reazy:application');
 
 class Reazy {
