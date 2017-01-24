@@ -5,7 +5,7 @@ var fs = require('fs');
 
 module.exports = generators.Base.extend({
   constructor: function(args, opts) {
-    this.pluginNameTest = '../reazy-' + opts.plugin;
+    // this.pluginNameTest = '../reazy-' + opts.plugin;
     this.pluginName = 'reazy-' + opts.plugin;
     generators.Base.apply(this, arguments);
   },
