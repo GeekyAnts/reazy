@@ -7,7 +7,7 @@ var fs = require('fs');
 
 module.exports = generators.Base.extend({
   constructor: function constructor(args, opts) {
-    this.pluginNameTest = '../reazy-' + opts.plugin;
+    // this.pluginNameTest = '../reazy-' + opts.plugin;
     this.pluginName = 'reazy-' + opts.plugin;
     generators.Base.apply(this, arguments);
   },
@@ -18,7 +18,7 @@ module.exports = generators.Base.extend({
 
   writing: function writing() {
     var self = this;
-    this.npmInstall([this.pluginNameTest], { save: true }, function () {
+    this.npmInstall([this.pluginName], { save: true }, function () {
       var pkg = self.fs.readJSON(self.destinationPath('node_modules', self.pluginName, 'package.json'), {});
       if (pkg.scripts.postadd) {
         // self.destinationRoot(self.destinationPath('node_modules', self.pluginName));
@@ -38,3 +38,4 @@ module.exports = generators.Base.extend({
     this.log('\nSuccessfully added ' + this.pluginName + '\n');
   }
 });
+//# sourceMappingURL=index.js.map

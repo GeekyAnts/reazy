@@ -126,3 +126,4 @@ module.exports = generators.Base.extend({
     process.exit(0);
   }
 });
+//# sourceMappingURL=index.js.map

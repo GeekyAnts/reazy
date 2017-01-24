@@ -63,3 +63,4 @@ var generatorOptions = {
 };
 
 exports.env = env;
+//# sourceMappingURL=generate.js.map
