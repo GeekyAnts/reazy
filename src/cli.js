@@ -1,12 +1,10 @@
 import vorpal from 'vorpal';
-
-const commands = [
-  'generate'
-];
+require('babel-register');
 
 const app = vorpal();
 
-commands.map((cmd) => require(`./commands/${cmd}`).default(app));
+require(`./commands`).default(app);
+require(`${process.cwd()}/src/cli`).default(app);
 
 export default {
   run: () => {

@@ -1,4 +1,5 @@
 import yeoman from 'yeoman-environment';
+import _ from 'lodash';
 
 const env = yeoman.createEnv();
 
@@ -11,6 +12,15 @@ env.register(require.resolve(`${reazyGenerators}/remove-plugin`), 'reazy:remove-
 const generatorOptions = {
   disableNotifyUpdate: true
 };
+
+function requireFromString(src, filename) {
+  var m = new module.constructor();
+  m.paths = module.paths;
+  m._compile(src, filename);
+  return m.exports;
+}
+
+const processArgv = _.clone(process.argv);
 
 export default function(vorpal) {
   vorpal
@@ -60,6 +70,14 @@ export default function(vorpal) {
     .action(function (args, callback) {
       env.run('reazy:remove-plugin', args);
     });
+
+  // vorpal
+  //   .catch('[words...]', 'Catches incorrect commands')
+  //   .action(function (args, callback) {
+  //     require('babel-register');
+  //     const localProjectCli = require(process.cwd() + '/src/cli');
+  //     localProjectCli.run(processArgv, vorpal);
+  //   });
 }
 
 export { env };

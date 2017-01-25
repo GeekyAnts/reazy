@@ -10,13 +10,12 @@ var _vorpal2 = _interopRequireDefault(_vorpal);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var commands = ['generate'];
+require('babel-register');
 
 var app = (0, _vorpal2.default)();
 
-commands.map(function (cmd) {
-  return require('./commands/' + cmd).default(app);
-});
+require('./commands').default(app);
+require(process.cwd() + '/src/cli').default(app);
 
 exports.default = {
   run: function run() {
