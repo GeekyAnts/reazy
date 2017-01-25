@@ -8,6 +8,10 @@ var _vorpal = require('vorpal');
 
 var _vorpal2 = _interopRequireDefault(_vorpal);
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('babel-register');
@@ -15,7 +19,9 @@ require('babel-register');
 var app = (0, _vorpal2.default)();
 
 require('./commands').default(app);
-require(process.cwd() + '/src/cli').default(app);
+if (_fs2.default.existsSync(process.cwd() + '/src/cli.js')) {
+  require(process.cwd() + '/src/cli').default(app);
+}
 
 exports.default = {
   run: function run() {

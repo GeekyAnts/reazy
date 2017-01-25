@@ -1,10 +1,13 @@
 import vorpal from 'vorpal';
+import fs from 'fs';
 require('babel-register');
 
 const app = vorpal();
 
 require(`./commands`).default(app);
-require(`${process.cwd()}/src/cli`).default(app);
+if(fs.existsSync(`${process.cwd()}/src/cli.js`)) {
+  require(`${process.cwd()}/src/cli`).default(app);
+}
 
 export default {
   run: () => {
