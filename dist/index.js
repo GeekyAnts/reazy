@@ -71,4 +71,3 @@ var Reazy = function () {
 exports.default = function () {
   return new Reazy();
 };
-//# sourceMappingURL=index.js.map

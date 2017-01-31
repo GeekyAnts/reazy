@@ -38,4 +38,3 @@ module.exports = generators.Base.extend({
     this.log('\nSuccessfully added ' + this.pluginName + '\n');
   }
 });
-//# sourceMappingURL=index.js.map

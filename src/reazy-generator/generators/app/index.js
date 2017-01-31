@@ -3,15 +3,29 @@
 var generators = require('yeoman-generator');
 var path = require('path');
 var assign = require('object.assign').getPolyfill();
+var ora = require('ora');
+var Shell = require('shelljs');
+var fs = require('fs-extra');
+var ejs = require('ejs');
+
+const checkCommmand = (command, cb) => {
+  // !!Shell.which(command);
+  Shell.exec('which ' + command, {silent: true}, (code, stdout, stderr) => {
+    cb(!!stdout);
+  });
+}
+
+const emptyFolder = (folder) => {
+  Shell.rm('-rf', folder)
+  Shell.mkdir(folder)
+};
 
 module.exports = generators.Base.extend({
   constructor: function() {
-    console.log('reazy init');
     generators.Base.apply(this, arguments);
   },
 
   initializing: function () {
-    console.log('awdgu');
     this.pkg = this.fs.readJSON(this.destinationPath('package.json'), {});
     this.props = {
       name: this.pkg.name || process.cwd().split(path.sep).pop(),
@@ -28,6 +42,76 @@ module.exports = generators.Base.extend({
       'mobx@3.0.0',
       'mobx-react@4.1.0'
     ];
+
+  },
+
+  /**
+   * Check for react-native.
+   */
+  findReactNativeCli: function() {
+    var done = this.async();
+    const spinner = ora('Finding react-native').start();
+
+    checkCommmand('react-native', (isInstalled) => {
+      if(!isInstalled) {
+        spinner.fail(`Missing react-native - 'npm install -g react-native-cli'`);
+        process.exit(1);
+      }
+
+      Shell.exec('react-native --version', { silent: true }, (code, stdout, stderr) => {
+        // verify 1.x.x or higher (we need react-native link)
+        if (!stdout.match(/react-native-cli:\s[1-9]\d*\.\d+\.\d+/)) {
+          spinner.fail(`Must have at least version 1.x - 'npm install -g react-native-cli'`);
+          process.exit(1);
+        }
+
+        spinner.succeed('Found react-native');
+        done();
+      });
+    });
+
+  },
+
+  /**
+   * Check if Android is good
+   */
+  checkAndroid: function() {
+    var done = this.async();
+    const spinner = ora('Finding android').start();
+
+    checkCommmand('android', (isInstalled) => {
+      if (isInstalled) {
+        Shell.exec('android list', { silent: true }, (code, stdout, stderr) => {
+          if (stdout.match(/android-23/)) {
+            spinner.succeed('Found android');
+          } else {
+            spinner.fail('Missing android SDK 23');
+          }
+          done();
+        });
+      } else {
+        spinner.fail('Missing android!');
+        done();
+      }
+    });
+
+  },
+
+  /**
+   * Check for git.
+   */
+  findGit: function() {
+    const spinner = ora('Finding git').start();
+
+    checkCommmand('git', (isInstalled) => {
+      if (!isInstalled) {
+        spinner.fail(`Missing git`);
+        process.exit(1);
+      }
+
+      spinner.succeed('Found git');
+    });
+
   },
 
   prompting: function () {
@@ -56,149 +140,6 @@ Please do not use the reserved word "React"`;
         message: 'Description',
         when: !this.pkg.description
       },
-      /*
-      {
-        type: 'checkbox',
-        name: 'providers',
-        message: 'What type of API are you making?',
-        choices: [
-          {
-            name: 'REST',
-            value: 'rest',
-            checked: true
-          },
-          {
-            name: 'Realtime via Socket.io',
-            value: 'socket.io',
-            checked: true
-          },
-          {
-            name: 'Realtime via Primus',
-            value: 'primus',
-          }
-        ]
-      },
-      {
-        type: 'list',
-        name: 'cors',
-        message: 'CORS configuration',
-        choices: [
-          {
-            name: 'Enabled for all domains',
-            value: 'enabled',
-            checked: true
-          },
-          {
-            name: 'Enabled for whitelisted domains',
-            value: 'whitelisted'
-          },
-          {
-            name: 'Disabled',
-            value: false
-          }
-        ]
-      },
-      {
-        type: 'input',
-        name: 'corsWhitelist',
-        message: 'Comma-separated domains for CORS whitelist. Include http(s)',
-        when: function(props){
-          return props.cors === 'whitelisted';
-        }
-      },
-      {
-        type: 'list',
-        name: 'database',
-        message: 'What database do you primarily want to use?',
-        default: 'nedb',
-        choices: [
-          {
-            name: 'Memory',
-            value: 'memory'
-          },
-          {
-            name: 'MongoDB',
-            value: 'mongodb'
-          },
-          {
-            name: 'MySQL',
-            value: 'mysql'
-          },
-          {
-            name: 'MariaDB',
-            value: 'mariadb'
-          },
-          {
-            name: 'NeDB',
-            value: 'nedb'
-          },
-          {
-            name: 'PostgreSQL',
-            value: 'postgres'
-          },
-          {
-            name: 'SQLite',
-            value: 'sqlite'
-          },
-          {
-           name: 'SQL Server',
-           value: 'mssql'
-          },
-          {
-            name: 'I will choose my own',
-            value: 'generic'
-          },
-        ]
-      },
-      {
-        type: 'checkbox',
-        name: 'authentication',
-        message: 'What authentication providers would you like to support?',
-        choices: [
-          {
-            name: 'local',
-            checked: true,
-            value: AUTH_PROVIDERS.local,
-          },
-          {
-            name: 'bitbucket',
-            value: AUTH_PROVIDERS.bitbucket,
-          },
-          {
-            name: 'dropbox',
-            value: AUTH_PROVIDERS.dropbox,
-          },
-          {
-            name: 'facebook',
-            value: AUTH_PROVIDERS.facebook,
-          },
-          {
-            name: 'github',
-            value: AUTH_PROVIDERS.github,
-          },
-          {
-            name: 'google',
-            value: AUTH_PROVIDERS.google,
-          },
-          {
-            name: 'instagram',
-            value: AUTH_PROVIDERS.instagram,
-          },
-          {
-            name: 'linkedin',
-            value: AUTH_PROVIDERS.linkedin,
-          },
-          {
-            name: 'paypal',
-            value: AUTH_PROVIDERS.paypal,
-          },
-          {
-            name: 'spotify',
-            value: AUTH_PROVIDERS.spotify
-          }
-        ]
-      }
-      */
     ];
 
     this.prompt(prompts).then(function (props) {
@@ -208,100 +149,67 @@ Please do not use the reserved word "React"`;
   },
 
   writing: {
-    /*
-    services: function() {
-      this.props.services = [];
-
-      if (this.props.database) {
-        // If auth is enabled also create a user service
-        if (this.props.localAuth || this.props.authentication.length) {
-          this.props.services.push('user');
-
-          var providers = this.props.authentication.slice();
-
-          if (this.props.localAuth) {
-            providers.push('local');
-          }
-
-          this.composeWith('reazy:service', {
-            options: {
-              type: 'database',
-              database: this.props.database,
-              name: 'user',
-              authentication: true,
-              providers: providers
-            }
-          });
-        }
-
-        this.fs.copyTpl(
-          this.templatePath('service.js'),
-          this.destinationPath('src/services', 'index.js'),
-          this.props
-        );
-      }
-    },
-    */
     application: function() {
-      this.fs.copy(this.templatePath('static'), this.destinationPath());
-      this.fs.copy(this.templatePath('static/.*'), this.destinationPath());
-      // this.fs.copy(this.templatePath('_gitignore'), this.destinationPath('', '.gitignore'));
+      fs.copySync(this.templatePath('static'), this.destinationPath());
+      // fs.copySync(this.templatePath('static/.*'), this.destinationPath());
 
-      this.fs.copyTpl(
-        this.templatePath('react-native-index.js'),
-        this.destinationPath('src/services/react-native', 'index.js'),
-        this.props
-      );
+      const template = fs.readFileSync(this.templatePath('react-native-index.js'), {encoding: 'utf8'});
+      const content = ejs.render(template, this.props);
+      fs.writeFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, {encoding: 'utf8'});
+      // this.fs.copyTpl(
+      //   this.templatePath('react-native-index.js'),
+      //   this.destinationPath('src/services/react-native', 'index.js'),
+      //   this.props
+      // );
 
     },
 
     config: function() {
-      this.fs.copyTpl(
-        this.templatePath('package.json'),
-        this.destinationPath('package.json'),
-        this.props
-      );
+      const template = fs.readFileSync(path.join(__dirname, 'templates', 'package.json'), {encoding: 'utf8'});
+      const content = ejs.render(template, this.props);
+      fs.writeFileSync(path.join(process.cwd(), 'package.json'), content, {encoding: 'utf8'});
+      // this.fs.copyTpl(
+      //   this.templatePath('package.json'),
+      //   this.destinationPath('package.json'),
+      //   this.props
+      // );
     },
+  },
 
-    deps: function() {
-      var devDependencies = [
-        'babel-jest@18.0.0',
-        'babel-plugin-transform-decorators-legacy',
-        'babel-preset-react-native@1.9.1',
-        'babel-preset-react-native-stage-0',
-        'jest@18.0.0',
-        'react-test-renderer@15.4.1'
-      ];
+  install: function() {
+    var devDependencies = [
+      'babel-jest@18.0.0',
+      'babel-plugin-transform-decorators-legacy',
+      'babel-preset-react-native@1.9.1',
+      'babel-preset-react-native-stage-0',
+      'jest@18.0.0',
+      'react-test-renderer@15.4.1'
+    ];
 
-      /*
-      this.dependencies.concat(devDependencies).forEach(function(dependency) {
-        var separatorIndex = dependency.indexOf('@');
-        var end = separatorIndex !== -1 ? separatorIndex : dependency.length;
-        var dependencyName = dependency.substring(0, end);
+    var self = this;
 
-        // Throw an error if the project name is the same as one of the dependencies
-        if(dependencyName === this.props.name) {
-          this.log.error('Your project can not be named ' + this.props.name + ' because the ' +
-            dependency + ' package will be installed as dependency.');
-          process.exit(1);
-        }
-      }.bind(this));
-      */
+    var spinnerInstallDev = ora('Installing dev dependencies').start();
+    this.npmInstall(devDependencies, { saveDev: true, stdio: 'ignore'}, function() {
+      spinnerInstallDev.succeed('Dev dependencies installed');
 
-      var self = this;
-
-      this.npmInstall(devDependencies, { saveDev: true});
-      this.npmInstall(this.dependencies, { save: true }, function() {
-        self.spawnCommandSync('react-native', ['upgrade']);
-        self.spawnCommandSync('react-native', ['link']);
-        self.fs.copy(self.templatePath('_babelrc'), self.destinationPath('', '.babelrc'));
+      var spinnerInstall = ora('Installing dependencies').start();
+      self.npmInstall(self.dependencies, { save: true, stdio: 'ignore' }, function() {
+        spinnerInstall.succeed('Dependencies installed');
+        emptyFolder(self.destinationPath('android'));
+        emptyFolder(self.destinationPath('ios'));
+        Shell.rm('-f', self.destinationPath('.gitignore'));
+        Shell.rm('-f', self.destinationPath('.babelrc'));
+        Shell.rm('-f', self.destinationPath('.flowconfig'));
+        self.spawnCommandSync('react-native', ['upgrade'], {stdio: 'ignore'});
+        self.spawnCommandSync('react-native', ['link'], {stdio: 'ignore'});
+        fs.copySync(self.templatePath('_babelrc'), self.destinationPath('', '.babelrc'));
+        fs.copySync(self.templatePath('_gitignore'), self.destinationPath('', '.gitignore'));
       });
-
-    }
+    });
   },
 
   end: function() {
-    this.log('\nWoot! We\'ve created your "' + this.props.name + '" app!');
+    this.log('\nWe\'ve created your "' + this.props.name + '" app!');
 
     this.log('To start your reazy app run `react-native run-ios` or `react-native run-android`.');
 
