@@ -5,7 +5,7 @@ var fs = require('fs');
 
 module.exports = generators.Base.extend({
   constructor: function(args, opts) {
-    // this.pluginNameTest = '../reazy-' + opts.plugin;
+    this.pluginNameTest = '../reazy-' + opts.plugin;
     this.pluginName = 'reazy-' + opts.plugin;
     generators.Base.apply(this, arguments);
   },
@@ -20,6 +20,7 @@ module.exports = generators.Base.extend({
 
   writing: function () {
     const self = this;
+    // this.npmInstall([this.pluginNameTest], {save: true}, function () {
     this.npmInstall([this.pluginName], {save: true}, function () {
       const pkg = self.fs.readJSON(self.destinationPath('node_modules', self.pluginName, 'package.json'), {});
       if(pkg.scripts.postadd) {

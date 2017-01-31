@@ -135,7 +135,7 @@ module.exports = generators.Base.extend({
 
       var template = fs.readFileSync(this.templatePath('react-native-index.js'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
-      fs.writeFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, { encoding: 'utf8' });
+      fs.outputFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, { encoding: 'utf8' });
       // this.fs.copyTpl(
       //   this.templatePath('react-native-index.js'),
       //   this.destinationPath('src/services/react-native', 'index.js'),
@@ -146,7 +146,7 @@ module.exports = generators.Base.extend({
     config: function config() {
       var template = fs.readFileSync(path.join(__dirname, 'templates', 'package.json'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
-      fs.writeFileSync(path.join(process.cwd(), 'package.json'), content, { encoding: 'utf8' });
+      fs.outputFileSync(path.join(process.cwd(), 'package.json'), content, { encoding: 'utf8' });
       // this.fs.copyTpl(
       //   this.templatePath('package.json'),
       //   this.destinationPath('package.json'),
@@ -188,3 +188,4 @@ module.exports = generators.Base.extend({
     process.exit(0);
   }
 });
+//# sourceMappingURL=index.js.map

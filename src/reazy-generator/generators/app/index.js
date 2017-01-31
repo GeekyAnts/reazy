@@ -155,7 +155,7 @@ Please do not use the reserved word "React"`;
 
       const template = fs.readFileSync(this.templatePath('react-native-index.js'), {encoding: 'utf8'});
       const content = ejs.render(template, this.props);
-      fs.writeFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, {encoding: 'utf8'});
+      fs.outputFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, {encoding: 'utf8'});
       // this.fs.copyTpl(
       //   this.templatePath('react-native-index.js'),
       //   this.destinationPath('src/services/react-native', 'index.js'),
@@ -167,7 +167,7 @@ Please do not use the reserved word "React"`;
     config: function() {
       const template = fs.readFileSync(path.join(__dirname, 'templates', 'package.json'), {encoding: 'utf8'});
       const content = ejs.render(template, this.props);
-      fs.writeFileSync(path.join(process.cwd(), 'package.json'), content, {encoding: 'utf8'});
+      fs.outputFileSync(path.join(process.cwd(), 'package.json'), content, {encoding: 'utf8'});
       // this.fs.copyTpl(
       //   this.templatePath('package.json'),
       //   this.destinationPath('package.json'),
