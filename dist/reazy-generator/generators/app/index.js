@@ -144,7 +144,7 @@ module.exports = generators.Base.extend({
     },
 
     config: function config() {
-      var template = fs.readFileSync(path.join(__dirname, 'templates', 'package.json'), { encoding: 'utf8' });
+      var template = fs.readFileSync(path.join(__dirname, 'templates', '_package.json'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
       fs.outputFileSync(path.join(process.cwd(), 'package.json'), content, { encoding: 'utf8' });
       // this.fs.copyTpl(

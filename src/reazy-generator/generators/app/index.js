@@ -165,7 +165,7 @@ Please do not use the reserved word "React"`;
     },
 
     config: function() {
-      const template = fs.readFileSync(path.join(__dirname, 'templates', 'package.json'), {encoding: 'utf8'});
+      const template = fs.readFileSync(path.join(__dirname, 'templates', '_package.json'), {encoding: 'utf8'});
       const content = ejs.render(template, this.props);
       fs.outputFileSync(path.join(process.cwd(), 'package.json'), content, {encoding: 'utf8'});
       // this.fs.copyTpl(

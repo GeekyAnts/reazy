@@ -84,3 +84,4 @@ function requireFromString(src, filename) {
 var processArgv = _lodash2.default.clone(process.argv);
 
 exports.env = env;
+//# sourceMappingURL=index.js.map
