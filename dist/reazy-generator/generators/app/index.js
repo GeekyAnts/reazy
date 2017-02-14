@@ -29,10 +29,11 @@ module.exports = generators.Base.extend({
     this.pkg = this.fs.readJSON(this.destinationPath('package.json'), {});
     this.props = {
       name: this.pkg.name || process.cwd().split(path.sep).pop(),
-      description: this.pkg.description
+      description: this.pkg.description,
+      packageJson: this.pkg
     };
 
-    this.dependencies = ['native-base@0.5.22', 'react-native-vector-icons@4.0.0', 'react@15.4.1', 'react-native-router-flux@3.37.0', 'react-native@0.40.0', 'reazy-native-router-actions@0.0.2', 'mobx@3.0.0', 'mobx-react@4.1.0'];
+    this.dependencies = ['native-base@2.0.5', 'react-native-vector-icons@4.0.0', 'react@15.4.1', 'react-native-router-flux@3.37.0', 'react-native@0.40.0', 'reazy-native-router-actions@0.0.2', 'mobx@3.0.0', 'mobx-react@4.1.0'];
   },
 
   /**
@@ -89,6 +90,7 @@ module.exports = generators.Base.extend({
    * Check for git.
    */
   findGit: function findGit() {
+    var done = this.async();
     var spinner = ora('Finding git').start();
 
     checkCommmand('git', function (isInstalled) {
@@ -98,6 +100,7 @@ module.exports = generators.Base.extend({
       }
 
       spinner.succeed('Found git');
+      done();
     });
   },
 
@@ -135,6 +138,7 @@ module.exports = generators.Base.extend({
 
       var template = fs.readFileSync(this.templatePath('react-native-index.js'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
+      // merge package json
       fs.outputFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, { encoding: 'utf8' });
       // this.fs.copyTpl(
       //   this.templatePath('react-native-index.js'),
@@ -146,6 +150,8 @@ module.exports = generators.Base.extend({
     config: function config() {
       var template = fs.readFileSync(path.join(__dirname, 'templates', '_package.json'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
+      var packageJson = assign(this.props.packageJson, JSON.parse(content));
+      content = JSON.stringify(packageJson);
       fs.outputFileSync(path.join(process.cwd(), 'package.json'), content, { encoding: 'utf8' });
       // this.fs.copyTpl(
       //   this.templatePath('package.json'),
@@ -176,6 +182,10 @@ module.exports = generators.Base.extend({
         self.spawnCommandSync('react-native', ['link'], { stdio: 'ignore' });
         fs.copySync(self.templatePath('_babelrc'), self.destinationPath('', '.babelrc'));
         fs.copySync(self.templatePath('_gitignore'), self.destinationPath('', '.gitignore'));
+
+        //Reazy deps
+        console.log('\nInstalling Reazy dependencies...');
+        self.spawnCommandSync('reazy', ['add', 'native-config'], { stdio: 'inherit' });
       });
     });
   },
