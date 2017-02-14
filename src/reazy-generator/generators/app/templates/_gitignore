@@ -53,3 +53,5 @@ fastlane/Preview.html
 fastlane/screenshots
 
 reazy-debug.log
+
+.env
