@@ -5,8 +5,24 @@
 
 Reazy is a bare bones pluggable JavaScript framework which helps you get started with your React and React Native project quickly. It is a service-based framework inspired from [FeathersJS](http://feathersjs.com/).
 
-This guide will walk you through everything you need to know about Reazy to create your mobile and web apps.
+### Getting started
 
-[Create your first Reazy app](http://docs.reazyframework.io/getting-started.html)
+Install Reazy CLI
+```sh
+$ npm install -g reazy-cli
+```
+
+Generate the app
+```sh
+$ reazy init MyAwesomeApp [type]
+```
+
+**\[type\]:** mobile/web/plugin. Optional (You will be prompted later if you don't specify it here)
+
+  - **mobile:** A simple React Native app with only the basic services.
+
+  - **web:** A React project for web. Coming soon!
+
+  - **plugin:** Scaffolding for a Reazy plugin.
 
 [Detailed documentaion](http://docs.reazyframework.io/)
