@@ -6,33 +6,45 @@ Object.defineProperty(exports, "__esModule", {
 exports.env = undefined;
 
 exports.default = function (vorpal) {
-  vorpal.command('init [type]', 'create a new app or plugin \n\  type: [web/mobile/plugin]').autocomplete(['mobile', 'web', 'plugin']).action(function (args, callback) {
+  vorpal.command('init <projectName> [type]', 'create a new app or plugin \n\  type: [web/mobile/plugin]').autocomplete(['mobile', 'web', 'plugin']).action(function (args, callback) {
+    var _this = this;
+
     this.log('');
     var self = this;
-    if (!args.type || ['mobile', 'web', 'plugin'].indexOf(args.type) === -1) {
-      this.prompt({
+    var generateAppSwitchCase = function generateAppSwitchCase(switchStatement) {
+      switch (switchStatement) {
+        case 'mobile':
+          self.log('Generating a mobile app for you');
+          env.run('reazy:mobile-app', generatorOptions, callback);
+          break;
+        case 'web':
+          self.log('Generating a web app for you');
+          env.run('reazy:web-app', generatorOptions, callback);
+          break;
+        case 'plugin':
+          self.log('Generating a plugin for you');
+          env.run('reazy:plugin', generatorOptions, callback);
+          break;
+        default:
+          self.log('Invalid option');
+          promptForType();
+      }
+    };
+    var promptForType = function promptForType() {
+      _this.prompt({
         type: 'list',
         name: 'type',
         message: 'What would you like to create?',
         choices: ['mobile', 'web', 'plugin']
       }, function (result) {
-        if (result.type === 'mobile') {
-          self.log('Okay, generating a mobile app for you');
-          env.run('reazy:app', generatorOptions, callback);
-        } else {
-          self.log('Coming soon!');
-          // callback();
-        }
+        generateAppSwitchCase(result.type);
       });
+    };
+    if (!args.type || ['mobile', 'web', 'plugin'].indexOf(args.type) === -1) {
+      promptForType();
     } else {
-      if (args.type === 'mobile') {
-        env.run('reazy:app', generatorOptions, callback);
-      } else {
-        self.log('Coming soon!');
-        // callback();
-      }
+      generateAppSwitchCase(args.type);
     }
-    // env.run('reazy:app', generatorOptions);
   });
 
   vorpal.command('add <plugin>').description('add a new plugin').autocomplete(['native-config']).action(function (args, callback) {
@@ -66,7 +78,9 @@ var env = _yeomanEnvironment2.default.createEnv();
 
 var reazyGenerators = '../reazy-generator/generators';
 
-env.register(require.resolve(reazyGenerators + '/app'), 'reazy:app');
+env.register(require.resolve(reazyGenerators + '/mobile-app'), 'reazy:mobile-app');
+env.register(require.resolve(reazyGenerators + '/web-app'), 'reazy:web-app');
+env.register(require.resolve(reazyGenerators + '/plugin'), 'reazy:plugin');
 env.register(require.resolve(reazyGenerators + '/add-plugin'), 'reazy:add-plugin');
 env.register(require.resolve(reazyGenerators + '/remove-plugin'), 'reazy:remove-plugin');
 

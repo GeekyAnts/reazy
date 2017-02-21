@@ -25,7 +25,6 @@ if (_fs2.default.existsSync(process.cwd() + '/src/cli.js')) {
 
 exports.default = {
   run: function run() {
-
     if (process.argv.length > 2) {
       // one and done
       app.parse(process.argv);
@@ -40,9 +39,9 @@ exports.default = {
 
   init: function init(root, projectName, type) {
     if (type) {
-      app.parse([process.argv[0], process.argv[1], 'init', type]);
+      app.parse([process.argv[0], process.argv[1], 'init', projectName, type]);
     } else {
-      app.parse([process.argv[0], process.argv[1], 'init']);
+      app.parse([process.argv[0], process.argv[1], 'init', projectName]);
     }
   }
 };

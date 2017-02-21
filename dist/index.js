@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isWeb = exports.isMobile = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -13,6 +14,8 @@ var _debug2 = _interopRequireDefault(_debug);
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
+
+var _platform = require('./platform');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55,11 +58,14 @@ var Reazy = function () {
       return this;
     }
   }, {
-    key: 'configure',
-    value: function configure(fn) {
-      fn.call(this);
-
-      return this;
+    key: 'isMobile',
+    value: function isMobile() {
+      return (0, _platform.isMobile)();
+    }
+  }, {
+    key: 'isWeb',
+    value: function isWeb() {
+      return (0, _platform.isWeb)();
     }
   }]);
 
@@ -71,3 +77,6 @@ var Reazy = function () {
 exports.default = function () {
   return new Reazy();
 };
+
+exports.isMobile = _platform.isMobile;
+exports.isWeb = _platform.isWeb;

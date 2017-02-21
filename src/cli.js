@@ -11,7 +11,6 @@ if(fs.existsSync(`${process.cwd()}/src/cli.js`)) {
 
 export default {
   run: () => {
-
     if (process.argv.length > 2) {
       // one and done
       app.parse(process.argv);
@@ -29,9 +28,9 @@ export default {
 
   init: (root, projectName, type) => {
     if(type) {
-      app.parse([process.argv[0], process.argv[1], 'init', type]);
+      app.parse([process.argv[0], process.argv[1], 'init', projectName, type]);
     } else {
-      app.parse([process.argv[0], process.argv[1], 'init']);
+      app.parse([process.argv[0], process.argv[1], 'init', projectName]);
     }
   }
 }

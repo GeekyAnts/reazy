@@ -2,22 +2,17 @@
 
 var generators = require('yeoman-generator');
 var path = require('path');
-var assign = require('object.assign').getPolyfill();
 var ora = require('ora');
 var Shell = require('shelljs');
 var fs = require('fs-extra');
 var ejs = require('ejs');
+var _ = require('lodash');
 
 var checkCommmand = function checkCommmand(command, cb) {
   // !!Shell.which(command);
   Shell.exec('which ' + command, { silent: true }, function (code, stdout, stderr) {
     cb(!!stdout);
   });
-};
-
-var emptyFolder = function emptyFolder(folder) {
-  Shell.rm('-rf', folder);
-  Shell.mkdir(folder);
 };
 
 module.exports = generators.Base.extend({
@@ -30,10 +25,8 @@ module.exports = generators.Base.extend({
     this.props = {
       name: this.pkg.name || process.cwd().split(path.sep).pop(),
       description: this.pkg.description,
-      packageJson: this.pkg
+      reazyVersion: require(path.join(__dirname, '../../../../package.json')).version
     };
-
-    this.dependencies = ['native-base@2.0.5', 'react-native-vector-icons@4.0.0', 'react@15.4.1', 'react-native-router-flux@3.37.0', 'react-native@0.40.0', 'reazy-native-router-actions@0.0.2', 'mobx@3.0.0', 'mobx-react@4.1.0'];
   },
 
   /**
@@ -126,67 +119,73 @@ module.exports = generators.Base.extend({
     }];
 
     this.prompt(prompts).then(function (props) {
-      this.props = assign(this.props, props);
+      this.props = _.assign(this.props, props);
       done();
     }.bind(this));
+  },
+
+  reactNativeInit: function reactNativeInit() {
+    var _this = this;
+
+    var done = this.async();
+    var spinner = ora('Generating React Native project').start();
+
+    Shell.exec('react-native init ' + this.props.name, { silent: true }, function (code, stdout, stderr) {
+
+      spinner.succeed('React Native project generated');
+      var fileArray = fs.readdirSync(path.join(_this.destinationPath(), _this.props.name));
+
+      fileArray.forEach(function (currentFile, index) {
+        if (currentFile !== 'node_modules') {
+          fs.copySync(path.join(this.destinationPath(), this.props.name, currentFile), path.join(this.destinationPath(), currentFile), { overwrite: true });
+        }
+      });
+      fs.removeSync(path.join(_this.destinationPath(), _this.props.name));
+
+      fs.copySync(_this.templatePath('_babelrc'), _this.destinationPath('', '.babelrc'));
+      fs.copySync(_this.templatePath('_gitignore'), _this.destinationPath('', '.gitignore'));
+
+      done();
+    });
   },
 
   writing: {
     application: function application() {
       fs.copySync(this.templatePath('static'), this.destinationPath());
-      // fs.copySync(this.templatePath('static/.*'), this.destinationPath());
 
       var template = fs.readFileSync(this.templatePath('react-native-index.js'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
-      // merge package json
+
       fs.outputFileSync(this.destinationPath('src/services/react-native', 'index.js'), content, { encoding: 'utf8' });
-      // this.fs.copyTpl(
-      //   this.templatePath('react-native-index.js'),
-      //   this.destinationPath('src/services/react-native', 'index.js'),
-      //   this.props
-      // );
     },
 
     config: function config() {
       var template = fs.readFileSync(path.join(__dirname, 'templates', '_package.json'), { encoding: 'utf8' });
       var content = ejs.render(template, this.props);
-      var packageJson = assign(this.props.packageJson, JSON.parse(content));
-      content = JSON.stringify(packageJson);
+
+      var currentPackageJson = require(path.join(this.destinationPath(), 'package.json'));
+      // merge package json
+      var packageJson = _.merge(currentPackageJson, JSON.parse(content));
+      content = JSON.stringify(packageJson, null, 2);
       fs.outputFileSync(path.join(process.cwd(), 'package.json'), content, { encoding: 'utf8' });
-      // this.fs.copyTpl(
-      //   this.templatePath('package.json'),
-      //   this.destinationPath('package.json'),
-      //   this.props
-      // );
     }
   },
 
   install: function install() {
-    var devDependencies = ['babel-jest@18.0.0', 'babel-plugin-transform-decorators-legacy', 'babel-preset-react-native@1.9.1', 'babel-preset-react-native-stage-0', 'jest@18.0.0', 'react-test-renderer@15.4.1'];
+    var _this2 = this;
 
-    var self = this;
+    var done = this.async();
 
-    var spinnerInstallDev = ora('Installing dev dependencies').start();
-    this.npmInstall(devDependencies, { saveDev: true, stdio: 'ignore' }, function () {
-      spinnerInstallDev.succeed('Dev dependencies installed');
+    var spinnerInstall = ora('Running "npm install"').start();
+    Shell.exec('npm install', { silent: true }, function (code, stdout, stderr) {
+      spinnerInstall.succeed('Dependencies installed');
 
-      var spinnerInstall = ora('Installing dependencies').start();
-      self.npmInstall(self.dependencies, { save: true, stdio: 'ignore' }, function () {
-        spinnerInstall.succeed('Dependencies installed');
-        emptyFolder(self.destinationPath('android'));
-        emptyFolder(self.destinationPath('ios'));
-        Shell.rm('-f', self.destinationPath('.gitignore'));
-        Shell.rm('-f', self.destinationPath('.babelrc'));
-        Shell.rm('-f', self.destinationPath('.flowconfig'));
-        self.spawnCommandSync('react-native', ['upgrade'], { stdio: 'ignore' });
-        self.spawnCommandSync('react-native', ['link'], { stdio: 'ignore' });
-        fs.copySync(self.templatePath('_babelrc'), self.destinationPath('', '.babelrc'));
-        fs.copySync(self.templatePath('_gitignore'), self.destinationPath('', '.gitignore'));
+      _this2.spawnCommandSync('react-native', ['link'], { stdio: 'ignore' });
 
-        //Reazy deps
-        console.log('\nInstalling Reazy dependencies...');
-        self.spawnCommandSync('reazy', ['add', 'native-config'], { stdio: 'inherit' });
-      });
+      //Reazy deps
+      _this2.log('\nInstalling Reazy dependencies...');
+      _this2.spawnCommandSync('reazy', ['add', 'native-config'], { stdio: 'inherit' });
+      done();
     });
   },
 

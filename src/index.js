@@ -1,6 +1,6 @@
 import makeDebug from 'debug';
 import _ from 'lodash';
-
+import { isMobile, isWeb } from './platform';
 
 const debug = makeDebug('reazy:application');
 
@@ -32,10 +32,12 @@ class Reazy {
     return this;
   }
 
-  configure (fn) {
-    fn.call(this);
+  isMobile() {
+    return isMobile();
+  }
 
-    return this;
+  isWeb() {
+    return isWeb();
   }
 
 };
@@ -43,3 +45,5 @@ class Reazy {
 export default () => {
   return new Reazy();
 }
+
+export { isMobile, isWeb }
