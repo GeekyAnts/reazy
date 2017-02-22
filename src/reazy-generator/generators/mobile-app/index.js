@@ -129,10 +129,10 @@ Please do not use the reserved word "React"`;
       },
     ];
 
-    this.prompt(prompts).then(function (props) {
+    this.prompt(prompts).then((props) => {
       this.props = _.assign(this.props, props);
       done();
-    }.bind(this));
+    });
   },
 
   reactNativeInit: function () {
@@ -144,7 +144,7 @@ Please do not use the reserved word "React"`;
       spinner.succeed('React Native project generated');
       var fileArray = fs.readdirSync(path.join(this.destinationPath(), this.props.name));
 
-      fileArray.forEach(function (currentFile, index) {
+      fileArray.forEach((currentFile, index) => {
         if (currentFile !== 'node_modules') {
           fs.copySync(path.join(this.destinationPath(), this.props.name, currentFile), path.join(this.destinationPath(), currentFile), { overwrite: true });
         }

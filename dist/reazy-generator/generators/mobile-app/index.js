@@ -98,6 +98,8 @@ module.exports = generators.Base.extend({
   },
 
   prompting: function prompting() {
+    var _this = this;
+
     var done = this.async();
     var prompts = [{
       name: 'name',
@@ -119,13 +121,13 @@ module.exports = generators.Base.extend({
     }];
 
     this.prompt(prompts).then(function (props) {
-      this.props = _.assign(this.props, props);
+      _this.props = _.assign(_this.props, props);
       done();
-    }.bind(this));
+    });
   },
 
   reactNativeInit: function reactNativeInit() {
-    var _this = this;
+    var _this2 = this;
 
     var done = this.async();
     var spinner = ora('Generating React Native project').start();
@@ -133,17 +135,17 @@ module.exports = generators.Base.extend({
     Shell.exec('react-native init ' + this.props.name, { silent: true }, function (code, stdout, stderr) {
 
       spinner.succeed('React Native project generated');
-      var fileArray = fs.readdirSync(path.join(_this.destinationPath(), _this.props.name));
+      var fileArray = fs.readdirSync(path.join(_this2.destinationPath(), _this2.props.name));
 
       fileArray.forEach(function (currentFile, index) {
         if (currentFile !== 'node_modules') {
-          fs.copySync(path.join(this.destinationPath(), this.props.name, currentFile), path.join(this.destinationPath(), currentFile), { overwrite: true });
+          fs.copySync(path.join(_this2.destinationPath(), _this2.props.name, currentFile), path.join(_this2.destinationPath(), currentFile), { overwrite: true });
         }
       });
-      fs.removeSync(path.join(_this.destinationPath(), _this.props.name));
+      fs.removeSync(path.join(_this2.destinationPath(), _this2.props.name));
 
-      fs.copySync(_this.templatePath('_babelrc'), _this.destinationPath('', '.babelrc'));
-      fs.copySync(_this.templatePath('_gitignore'), _this.destinationPath('', '.gitignore'));
+      fs.copySync(_this2.templatePath('_babelrc'), _this2.destinationPath('', '.babelrc'));
+      fs.copySync(_this2.templatePath('_gitignore'), _this2.destinationPath('', '.gitignore'));
 
       done();
     });
@@ -172,7 +174,7 @@ module.exports = generators.Base.extend({
   },
 
   install: function install() {
-    var _this2 = this;
+    var _this3 = this;
 
     var done = this.async();
 
@@ -180,11 +182,11 @@ module.exports = generators.Base.extend({
     Shell.exec('npm install', { silent: true }, function (code, stdout, stderr) {
       spinnerInstall.succeed('Dependencies installed');
 
-      _this2.spawnCommandSync('react-native', ['link'], { stdio: 'ignore' });
+      _this3.spawnCommandSync('react-native', ['link'], { stdio: 'ignore' });
 
       //Reazy deps
-      _this2.log('\nInstalling Reazy dependencies...');
-      _this2.spawnCommandSync('reazy', ['add', 'native-config'], { stdio: 'inherit' });
+      _this3.log('\nInstalling Reazy dependencies...');
+      _this3.spawnCommandSync('reazy', ['add', 'native-config'], { stdio: 'inherit' });
       done();
     });
   },
