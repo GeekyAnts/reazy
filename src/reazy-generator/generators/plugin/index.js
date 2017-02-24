@@ -1,13 +1,14 @@
 'use strict';
 
-var generators = require('yeoman-generator');
-var path = require('path');
-var ora = require('ora');
-var Shell = require('shelljs');
-var fs = require('fs-extra');
-var ejs = require('ejs');
-var chalk = require('chalk');
-var _ = require('lodash');
+import generators from 'yeoman-generator';
+import path from 'path';
+import ora from 'ora';
+import Shell from 'shelljs';
+import fs from 'fs-extra';
+import ejs from 'ejs';
+import chalk from 'chalk';
+import _ from 'lodash';
+import camelCase from 'camelcase';
 
 const renderAndCopyTemplate = (templatePath, destinationPath, data) => {
   var template = fs.readFileSync(templatePath, { encoding: 'utf8' });
@@ -52,6 +53,8 @@ module.exports = generators.Base.extend({
     ];
 
     this.prompt(prompts).then(function (props) {
+      props.camelCaseName = camelCase(props.name.replace('reazy-', ''));
+
       this.props = _.assign(this.props, props);
       done();
     }.bind(this));
@@ -64,6 +67,24 @@ module.exports = generators.Base.extend({
     renderAndCopyTemplate(
       this.templatePath('README.md'),
       this.destinationPath('README.md'),
+      this.props
+    );
+
+    renderAndCopyTemplate(
+      this.templatePath('setup-index.js'),
+      this.destinationPath('src/setup/index.js'),
+      this.props
+    );
+
+    renderAndCopyTemplate(
+      this.templatePath('add-index.js'),
+      this.destinationPath('src/setup/generators/add/index.js'),
+      this.props
+    );
+
+    renderAndCopyTemplate(
+      this.templatePath('remove-index.js'),
+      this.destinationPath('src/setup/generators/remove/index.js'),
       this.props
     );
 

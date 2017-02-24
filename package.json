@@ -34,6 +34,7 @@
     "ast-traverse": "^0.1.1",
     "babel-core": "^6.22.1",
     "babel-register": "^6.22.0",
+    "camelcase": "^4.0.0",
     "chalk": "^1.1.1",
     "cross-spawn-async": "^2.1.9",
     "detect-node": "^2.0.3",

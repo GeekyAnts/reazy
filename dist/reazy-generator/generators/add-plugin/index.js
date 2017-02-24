@@ -7,7 +7,10 @@ var fs = require('fs');
 
 module.exports = generators.Base.extend({
   constructor: function constructor(args, opts) {
-    if (opts.plugin.indexOf('../') !== -1) {
+    if (opts.plugin.indexOf('reazy-') === 0) {
+      this.pluginName = opts.plugin;
+      this.pluginPath = opts.plugin;
+    } else if (opts.plugin.indexOf('../') === 0) {
       this.pluginName = '../reazy-' + opts.plugin.substring(3);
       this.pluginPath = 'reazy-' + opts.plugin.substring(3);
     } else {
@@ -22,25 +25,25 @@ module.exports = generators.Base.extend({
   prompting: function prompting() {},
 
   writing: function writing() {
-    var self = this;
-    // this.npmInstall([this.pluginNameTest], {save: true}, function () {
-    this.npmInstall([this.pluginName], { save: true }, function () {
-      var pkg = self.fs.readJSON(self.destinationPath('node_modules', self.pluginPath, 'package.json'), {});
-      if (pkg.scripts && pkg.scripts.postadd) {
-        // self.destinationRoot(self.destinationPath('node_modules', self.pluginName));
-        var postaddScriptPath = pkg.scripts.postadd.split('/');
-        postaddScriptPath = self.destinationPath.apply(self, ['node_modules', self.pluginPath].concat(_toConsumableArray(postaddScriptPath)));
-        // const cmd = postaddCommand[0];
-        // const args = postaddCommand.slice(1);
-        self.spawnCommandSync('node', [postaddScriptPath]);
-        // self.destinationRoot('../../');
-      } else {
-        self.log('No postadd script found. This plugin might require additional setup.');
-      }
-    });
+    var _this = this;
+
+    var done = this.async();
+    this.spawnCommandSync('npm', ['install', '--save', this.pluginName]);
+    var pkg = this.fs.readJSON(this.destinationPath('node_modules', this.pluginPath, 'package.json'), {});
+    if (pkg['reazy-setup']) {
+      var setupScriptPath = pkg['reazy-setup'].split('/');
+      setupScriptPath = this.destinationPath.apply(this, ['node_modules', this.pluginPath].concat(_toConsumableArray(setupScriptPath)));
+
+      var setupScript = require(setupScriptPath);
+      setupScript.add(function () {
+        _this.log('\nSuccessfully added ' + _this.pluginName + '\n');
+        done();
+      });
+    } else {
+      this.log('No setup script found. This plugin might require additional setup.');
+      this.log('\nSuccessfully added ' + this.pluginName + '\n');
+    }
   },
 
-  end: function end() {
-    this.log('\nSuccessfully added ' + this.pluginName + '\n');
-  }
+  end: function end() {}
 });
