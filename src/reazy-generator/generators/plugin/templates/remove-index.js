@@ -21,11 +21,13 @@ module.exports = generators.Base.extend({
   },
 
   writing: function () {
-    // Uncomment to remove the import from src/app.js
-    // removeImport('<%= name %>');
+    // Note: ALWAYS remove app.use before removing import for any package.
 
     // Uncomment to remove app.use from src/app.js
     // removeUse('<%= name %>');
+
+    // Uncomment to remove the import from src/app.js
+    // removeImport('<%= name %>');
 
     // Uncomment to remove config variable from env file
     // removeEnv('prompt1');
