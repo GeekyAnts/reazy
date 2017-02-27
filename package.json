@@ -1,6 +1,6 @@
 {
   "name": "reazy",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "A simple service-based framework for React and React Native",
   "main": "dist/index.js",
   "scripts": {
