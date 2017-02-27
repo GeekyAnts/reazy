@@ -112,7 +112,7 @@ module.exports = generators.Base.extend({
     this.log('\nWe\'ve created "' + this.props.name + '" plugin!');
 
     this.log('To start developing, run `npm link && npm run watch`.');
-    this.log('Now you can create a Reazy project and run `npm link <your-plugin-name>` to start testing your plugin in real-time.');
+    this.log('Now you can create a Reazy project and run `npm link ' + this.props.name +'` to start testing your plugin in real-time.');
 
     process.exit(0);
   }

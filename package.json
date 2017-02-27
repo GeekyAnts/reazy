@@ -1,7 +1,7 @@
 {
   "name": "reazy",
   "version": "0.0.17",
-  "description": "A simple services-based framework for React and React Native",
+  "description": "A simple service-based framework for React and React Native",
   "main": "dist/index.js",
   "scripts": {
     "copy-templates-mob": "cp -rf src/reazy-generator/generators/mobile-app/templates dist/reazy-generator/generators/mobile-app/templates",

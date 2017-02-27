@@ -2,7 +2,7 @@
   "name": "<%= name %>",
   "description": "<%= description %>",
   "version": "0.0.1",
-  "main": "dist/index.js",
+  "main": "dist/service/index.js",
   "keywords": [
     "reazy",
     "react",
