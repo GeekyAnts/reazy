@@ -1,4 +1,4 @@
-
+## Not being maintained at the moment
 ![Reazy logo](http://docs.reazyframework.io/images/text-logo.png)
 
 ### A simple service-based opinionated framework for React and React Native.
